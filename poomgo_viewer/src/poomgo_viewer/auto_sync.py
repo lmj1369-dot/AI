@@ -63,7 +63,6 @@ async def sync_two_days_ago(settings: Settings) -> tuple[int, int]:
     range_start = korea_midnight_utc(start_date)
     range_end = korea_midnight_utc(end_date)
     try:
-        await store.initialize()
         async for _, _, payload in client.iter_invoice_pages(headers=headers, params=params, page=1):
             rows = payload.get("data", [])
             fetched += len(rows)

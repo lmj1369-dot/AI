@@ -43,10 +43,6 @@ class MariaDbStore:
             raise ValueError("MARIADB_DATABASE_URL이 설정되지 않았습니다.")
         self.engine: AsyncEngine = create_async_engine(database_url, pool_pre_ping=True)
 
-    async def initialize(self) -> None:
-        async with self.engine.begin() as connection:
-            await connection.run_sync(metadata.create_all)
-
     async def save_page(self, rows: list[dict[str, Any]]) -> tuple[int, int]:
         if not rows:
             return 0, 0

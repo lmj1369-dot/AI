@@ -108,7 +108,6 @@ async def save_invoices(request: InvoiceSaveRequest) -> dict[str, int]:
     store = None
     try:
         store = MariaDbStore(get_database_url(settings))
-        await store.initialize()
         saved, skipped = await store.save_page(request.rows)
         write_execution_log(
             run_type="manual",
