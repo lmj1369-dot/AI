@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>품고 주문 조회</title>
+  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+  <link rel="stylesheet" href="/static/dashboard.css">
+</head>
+<body>
+  <main class="shell">
+    <header class="topbar">
+      <div>
+        <div class="brand-lockup" role="img" aria-label="동국제약 Dongkook Pharmaceutical">
+          <span class="brand-mark">Dongkook</span>
+          <span class="brand-korean">동국제약</span>
+        </div>
+        <p class="eyebrow">POOMGO / INVOICE API</p>
+        <h1>출고 데이터 관리센터</h1>
+        <p class="subhead">품고 송장 조회 · 품목 출고수량 저장 · 자동 동기화</p>
+      </div>
+      <div class="actions">
+        <button id="save-database" type="button" disabled>DB 저장</button>
+        <span id="save-result" class="save-result" role="status"></span>
+        <button id="download" type="button" disabled>CSV 다운로드</button>
+        <button id="show-logs" type="button">실행 로그</button>
+        <button id="refresh" type="button">새로고침</button>
+      </div>
+    </header>
+    <form id="filters" class="filters">
+      <label>마감 시작일 <input name="closedAtGte" type="date" required></label>
+      <label>마감 종료일 <input name="closedAtLte" type="date" required></label>
+      <button type="submit">기간 검색</button>
+    </form>
+    <section class="auto-settings">
+      <div>
+        <p class="eyebrow">AUTO SAVE</p>
+        <h2>자동 저장 설정</h2>
+        <p class="settings-help">오늘 기준 3일 전부터 2일 전까지의 데이터를 설정한 시각에 저장합니다.</p>
+        <div class="schedule-status">
+          <span>현재 한국시간 <strong id="current-korea-time">확인 중...</strong></span>
+          <span>다음 실행까지 <strong id="next-run-countdown">확인 중...</strong></span>
+        </div>
+      </div>
+      <form id="auto-settings-form" class="auto-settings-form">
+        <label class="toggle-label"><input id="auto-enabled" type="checkbox"> 자동 저장 사용</label>
+        <label>실행 시각 <input id="auto-times" type="text" placeholder="08:00,18:00"></label>
+        <button type="submit">설정 저장</button>
+        <span id="auto-settings-status" role="status"></span>
+      </form>
+    </section>
+    <section class="auto-settings database-settings">
+      <div>
+        <p class="eyebrow">MARIADB</p>
+        <h2>데이터베이스 접속 설정</h2>
+        <p class="settings-help">비밀번호는 화면에 다시 표시하지 않으며, 비워두면 기존 비밀번호를 유지합니다.</p>
+      </div>
+      <form id="database-settings-form" class="database-settings-form">
+        <label>호스트 <input id="db-host" type="text" required></label>
+        <label>포트 <input id="db-port" type="number" min="1" max="65535" value="3306" required></label>
+        <label>데이터베이스 <input id="db-name" type="text" required></label>
+        <label>사용자명 <input id="db-username" type="text" required></label>
+        <label>비밀번호 <input id="db-password" type="password" placeholder="기존 값 유지"></label>
+        <button id="test-database" type="button">접속 테스트</button>
+        <button type="submit">접속 설정 저장</button>
+        <span id="database-settings-status" role="status"></span>
+      </form>
+    </section>
+    <section class="statusbar">
+      <span id="status">조회 조건을 확인한 뒤 검색 버튼을 눌러주세요.</span>
+      <span id="count"></span>
+    </section>
+    <section id="progress-panel" class="progress-panel" hidden aria-live="polite">
+      <div class="progress-meta">
+        <span id="progress-label">조회 준비 중...</span>
+        <strong id="progress-percent">0%</strong>
+      </div>
+      <div class="progress-track"><div id="progress-bar" class="progress-bar"></div></div>
+    </section>
+    <section id="content" class="table-wrap" aria-live="polite"></section>
+    <nav id="grid-pager" class="grid-pager" aria-label="그리드 페이지 이동" hidden>
+      <button id="previous-page" type="button">이전</button>
+      <form id="page-jump" class="page-jump">
+        <label for="page-number">페이지</label>
+        <input id="page-number" type="number" min="1" value="1" inputmode="numeric">
+        <button type="submit">이동</button>
+      </form>
+      <span id="grid-page-label"></span>
+      <button id="next-page" type="button">다음</button>
+    </nav>
+    <dialog id="logs-dialog" class="logs-dialog">
+      <div class="logs-dialog-header">
+        <div>
+          <p class="eyebrow">EXECUTION LOG</p>
+          <h2>실행 로그</h2>
+        </div>
+        <button id="close-logs" type="button">닫기</button>
+      </div>
+      <div id="logs-content" class="logs-content"></div>
+    </dialog>
+  </main>
+  <script src="/static/dashboard.js?v=4"></script>
+</body>
+</html>

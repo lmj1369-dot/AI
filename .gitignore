@@ -1,0 +1,8 @@
+.venv/
+.env
+auto_settings.json
+db_settings.json
+logs/
+__pycache__/
+.pytest_cache/
+*.py[cod]
