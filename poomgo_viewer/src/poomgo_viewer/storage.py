@@ -1,3 +1,4 @@
+from datetime import date, datetime
 from typing import Any
 
 from sqlalchemy import Column, MetaData, String, Table, select
@@ -86,8 +87,8 @@ class MariaDbStore:
                             channelorderid=order.get("channelOrderId"),
                             channelname=order.get("channelName"),
                             status="N",
-                            createdAt=invoice.get("createdAt"),
-                            closedAt=invoice.get("closedAt"),
+                            createdAt=_as_date_text(invoice.get("createdAt")),
+                            closedAt=_as_date_text(invoice.get("closedAt")),
                             procdate=None,
                             deptgubun="40",
                             courierName=invoice.get("courierName"),
@@ -105,4 +106,21 @@ class MariaDbStore:
 
 def _as_text(value: Any) -> str | None:
     return None if value is None else str(value)
+
+
+def _as_date_text(value: Any) -> str | None:
+    if value is None:
+        return None
+    if isinstance(value, datetime):
+        return value.date().isoformat()
+    if isinstance(value, date):
+        return value.isoformat()
+
+    text = str(value).strip()
+    if not text:
+        return None
+    try:
+        return datetime.fromisoformat(text.replace("Z", "+00:00")).date().isoformat()
+    except ValueError:
+        return date.fromisoformat(text).isoformat()
 
