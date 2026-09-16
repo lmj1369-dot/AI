@@ -1,5 +1,6 @@
 import json
 import asyncio
+import sys
 from datetime import datetime, timezone
 from contextlib import asynccontextmanager
 from pydantic import BaseModel
@@ -34,8 +35,20 @@ async def lifespan(_: FastAPI):
             await asyncio.gather(task, return_exceptions=True)
 
 
+def resolve_static_dir(module_file: str | Path | None = None) -> Path:
+    candidate = Path(module_file) if module_file is not None else Path(__file__)
+    base_dir = Path(getattr(sys, "_MEIPASS", "")) if getattr(sys, "_MEIPASS", None) else candidate.parent
+    bundled = base_dir / "poomgo_viewer" / "static"
+    fallback = candidate.parent / "static"
+    if bundled.exists():
+        return bundled
+    if fallback.exists():
+        return fallback
+    return fallback
+
+
 app = FastAPI(title="Poomgo API Viewer", lifespan=lifespan)
-STATIC_DIR = Path(__file__).parent / "static"
+STATIC_DIR = resolve_static_dir()
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 
 

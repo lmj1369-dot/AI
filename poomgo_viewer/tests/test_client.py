@@ -1,6 +1,10 @@
+import sys
+from pathlib import Path
+
 import httpx
 import pytest
 
+from poomgo_viewer.app import resolve_static_dir
 from poomgo_viewer.client import PoomgoClient
 
 
@@ -36,3 +40,14 @@ async def test_client_sends_authorization_header(monkeypatch: pytest.MonkeyPatch
     assert captured["queries"][1].startswith("page=2&pageSize=50&")
     assert result["data"] == [{"invoice": "1"}, {"invoice": "2"}]
     assert result["rowCount"] == 2
+
+
+def test_resolve_static_dir_for_pyinstaller_bundle(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    bundle_dir = tmp_path / "bundle"
+    static_dir = bundle_dir / "poomgo_viewer" / "static"
+    static_dir.mkdir(parents=True)
+    (static_dir / "index.html").write_text("ok", encoding="utf-8")
+
+    monkeypatch.setattr(sys, "_MEIPASS", str(bundle_dir), raising=False)
+
+    assert resolve_static_dir(module_file=tmp_path / "not_used" / "app.py") == static_dir

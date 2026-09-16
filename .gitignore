@@ -1,0 +1,31 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Virtual Environment
+.venv/
+venv/
+ENV/
+env/
+
+# PyInstaller / Build outputs
+build/
+dist/
+*.spec
+*.zip
+
+# Testing / Cache
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Environment Variables & Local Settings (Security)
+.env
+.env.*
+db_settings.json
+auto_settings.json
+*.log
+logs/
