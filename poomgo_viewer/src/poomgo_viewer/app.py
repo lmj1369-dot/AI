@@ -15,7 +15,7 @@ from poomgo_viewer.auto_config import load_auto_config, save_auto_config
 from poomgo_viewer.db_config import get_database_url, load_db_config, save_db_config, test_db_connection
 from poomgo_viewer.config import get_settings
 from poomgo_viewer.storage import MariaDbStore
-from poomgo_viewer.local_log import read_execution_logs, write_execution_log
+from poomgo_viewer.local_log import KOREA, read_execution_logs, write_execution_log
 from poomgo_viewer.auto_sync import run_scheduled_sync
 
 
@@ -104,7 +104,7 @@ async def test_database_settings(update: DbSettingsUpdate) -> dict[str, str]:
 @app.post("/api/invoices/save")
 async def save_invoices(request: InvoiceSaveRequest) -> dict[str, int]:
     settings = get_settings()
-    started_at = datetime.now(timezone.utc).isoformat()
+    started_at = datetime.now(KOREA).isoformat()
     store = None
     try:
         store = MariaDbStore(get_database_url(settings))

@@ -127,6 +127,29 @@ function formatLogValue(value) {
   return value === null || value === undefined || value === '' ? '-' : escapeHtml(value);
 }
 
+function formatLogDate(value) {
+  if (!value) return '-';
+  try {
+    const date = new Date(value);
+    if (isNaN(date.getTime())) return escapeHtml(value);
+    const parts = new Intl.DateTimeFormat('en-CA', {
+      timeZone: 'Asia/Seoul',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: false,
+      hourCycle: 'h23',
+    }).formatToParts(date);
+    const p = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
+    return `${p.year}-${p.month}-${p.day} ${p.hour}:${p.minute}:${p.second}`;
+  } catch {
+    return escapeHtml(value);
+  }
+}
+
 async function openLogs() {
   logsContent.innerHTML = '<div class="logs-loading">로그를 불러오는 중...</div>';
   logsDialog.showModal();
@@ -138,7 +161,7 @@ async function openLogs() {
       logsContent.innerHTML = '<div class="empty">기록된 실행 로그가 없습니다.</div>';
       return;
     }
-    logsContent.innerHTML = `<table class="logs-table"><thead><tr><th>실행</th><th>상태</th><th>시작</th><th>조회</th><th>신규 저장</th><th>중복</th><th>오류</th></tr></thead><tbody>${logs.map((log) => `<tr><td>${formatLogValue(log.run_type)}</td><td class="log-${formatLogValue(log.status)}">${formatLogValue(log.status)}</td><td>${formatLogValue(log.started_at)}</td><td>${formatLogValue(log.fetched_count)}</td><td>${formatLogValue(log.saved_count)}</td><td>${formatLogValue(log.skipped_count)}</td><td>${formatLogValue(log.error_message)}</td></tr>`).join('')}</tbody></table>`;
+    logsContent.innerHTML = `<table class="logs-table"><thead><tr><th>실행</th><th>상태</th><th>시작</th><th>조회</th><th>신규 저장</th><th>중복</th><th>오류</th></tr></thead><tbody>${logs.map((log) => `<tr><td>${formatLogValue(log.run_type)}</td><td class="log-${formatLogValue(log.status)}">${formatLogValue(log.status)}</td><td>${formatLogDate(log.started_at)}</td><td>${formatLogValue(log.fetched_count)}</td><td>${formatLogValue(log.saved_count)}</td><td>${formatLogValue(log.skipped_count)}</td><td>${formatLogValue(log.error_message)}</td></tr>`).join('')}</tbody></table>`;
   } catch (error) {
     logsContent.innerHTML = `<div class="error">${escapeHtml(error.message)}</div>`;
   }

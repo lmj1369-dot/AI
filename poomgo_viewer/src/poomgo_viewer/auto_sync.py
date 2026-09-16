@@ -59,7 +59,7 @@ async def sync_two_days_ago(settings: Settings) -> tuple[int, int]:
     saved = 0
     skipped = 0
     fetched = 0
-    started_at = datetime.now(timezone.utc).isoformat()
+    started_at = datetime.now(KOREA).isoformat()
     range_start = korea_midnight_utc(start_date)
     range_end = korea_midnight_utc(end_date)
     try:

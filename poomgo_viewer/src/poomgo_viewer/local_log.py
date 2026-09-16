@@ -5,6 +5,7 @@ from typing import Any
 
 LOG_PATH = Path("logs") / "poomgo_sync.log"
 LOG_RETENTION_DAYS = 30
+KOREA = timezone(timedelta(hours=9))
 
 
 def write_execution_log(
@@ -23,7 +24,7 @@ def write_execution_log(
     record: dict[str, Any] = {
         "run_type": run_type,
         "started_at": started_at,
-        "finished_at": datetime.now(timezone.utc).isoformat(),
+        "finished_at": datetime.now(KOREA).isoformat(),
         "status": status,
         "range_start": range_start,
         "range_end": range_end,
@@ -52,13 +53,15 @@ def read_execution_logs(limit: int = 100) -> list[dict[str, Any]]:
 
 
 def _prune_old_logs() -> None:
-    cutoff = datetime.now(timezone.utc) - timedelta(days=LOG_RETENTION_DAYS)
+    cutoff = datetime.now(KOREA) - timedelta(days=LOG_RETENTION_DAYS)
     kept_lines: list[str] = []
     for line in LOG_PATH.read_text(encoding="utf-8").splitlines():
         try:
             record = json.loads(line)
             timestamp = datetime.fromisoformat(record["started_at"])
-            if timestamp.tzinfo is None or timestamp >= cutoff:
+            if timestamp.tzinfo is None:
+                timestamp = timestamp.replace(tzinfo=KOREA)
+            if timestamp >= cutoff:
                 kept_lines.append(line)
         except (json.JSONDecodeError, KeyError, TypeError, ValueError):
             kept_lines.append(line)
